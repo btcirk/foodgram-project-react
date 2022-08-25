@@ -1,11 +1,8 @@
-from django.urls import path, include
+from django.urls import path, re_path, include
 from rest_framework import routers
-
-#from ..users.views import UsersViewSet
 
 
 urlpatterns = [
-    #path('', include(router.urls)),
-    path('auth/', include('users.urls')),
-    path('users/', include('users.urls')),
+    path('', include('djoser.urls.base')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
 ]
