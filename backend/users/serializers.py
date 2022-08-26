@@ -1,3 +1,4 @@
+import rest_framework.permissions
 from rest_framework import serializers
 
 from .models import User
