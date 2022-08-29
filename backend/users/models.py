@@ -8,8 +8,6 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
 
-    #USERNAME_FIELD = 'username'
-    #REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
 
@@ -17,14 +15,16 @@ class User(AbstractUser):
         return self.username
 
 
-class Follow(models.Model):
+class Subscription(models.Model):
     user = models.ForeignKey(
         User,
-        related_name='follower',
+        related_name='subscriber',
+        verbose_name='Подписчик',
         on_delete=models.CASCADE
     )
-    following = models.ForeignKey(
+    author = models.ForeignKey(
         User,
+        verbose_name='Автор',
         null=True,
         on_delete=models.CASCADE
     )
