@@ -1,9 +1,11 @@
 from django.urls import path, re_path, include
 from rest_framework import routers
 from users.views import UserViewSet
+from recipies.views import TagViewSet
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
+router.register(r'tags', TagViewSet, basename='tags')
 #router.register(r'users/me', UserViewSet, basename='me')
 #router.register(r'users/set_password', UserViewSet, basename='set-password')
 
