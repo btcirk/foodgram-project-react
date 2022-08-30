@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tag, Food, Ingredient, Recipe
+from .models import Tag, Ingredient, IngredientAmount, Recipe
 
 
 @admin.register(Tag)
@@ -12,8 +12,8 @@ class IngredientAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Food)
-class FoodAdmin(admin.ModelAdmin):
+@admin.register(IngredientAmount)
+class IngredientAmountAdmin(admin.ModelAdmin):
     pass
 
 

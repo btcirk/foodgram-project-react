@@ -13,11 +13,16 @@ class Tag(models.Model):
     slug = models.SlugField(
         verbose_name='Уникальный слаг', max_length=200, unique=True)
 
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
     def __str__(self):
         return self.name
 
 
-class Food(models.Model):
+class Ingredient(models.Model):
     name = models.CharField(verbose_name='Название',
                             max_length=200,
                             blank=False)
@@ -26,6 +31,15 @@ class Food(models.Model):
         max_length=200,
         blank=False
     )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'measurement_unit'],
+                                    name='unique ingredient')
+        ]
 
     def __str__(self):
         return self.name
@@ -52,27 +66,41 @@ class Recipe(models.Model):
                                max_digits=3,
                                decimal_places=0,
                                blank=False)
-    ingredient = models.ManyToManyField(Food,
-                                        through='Ingredient')
+    ingredient = models.ManyToManyField(Ingredient,
+                                        through='IngredientAmount')
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.title
 
 
-class Ingredient(models.Model):
+class IngredientAmount(models.Model):
     recipe = models.ForeignKey(Recipe,
                                on_delete=models.CASCADE,
                                verbose_name='Рецепт',
                                related_name='which_recipe')
-    ingredient = models.ForeignKey(Food,
+    ingredient = models.ForeignKey(Ingredient,
                                    on_delete=models.PROTECT,
                                    verbose_name='Ингредиент',
                                    related_name='which_ingredient'
                                    )
-    amount = models.DecimalField(verbose_name='Количество',
-                                 max_digits=4,
-                                 decimal_places=0,
-                                 blank=False)
+    amount = models.PositiveSmallIntegerField(verbose_name='Количество',
+                                              blank=False)
 
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Количество ингридиента'
+        verbose_name_plural = 'Количество ингридиентов'
+        constraints = [
+            models.UniqueConstraint(fields=['ingredient', 'recipe'],
+                                    name='unique ingredients recipe')
+    ]
+
+    def __str__(self):
+        return self.ingredient
 
 
