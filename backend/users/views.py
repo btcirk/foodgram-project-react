@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 
 from djoser.views import UserViewSet
 
-from .models import User, Subscription
+from .models import Subscription
 from .serializers import UserSerializer, SubscriptionSerializer
 from api.pagination import LimitPageNumberPagination
 
