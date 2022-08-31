@@ -1,7 +1,9 @@
 from rest_framework import viewsets, mixins
-from rest_framework.permissions import AllowAny
-from .models import Tag, Ingredient
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from .models import Tag, Ingredient, Recipe
 from .serializers import TagSerializer, IngredientSerializer
+from .serializers import RecipeListSerializer, RecipeCreateSerializer
+from api.pagination import LimitPageNumberPagination
 
 
 class ListRetrieveViewSet(
@@ -24,3 +26,14 @@ class IngredientViewSet(ListRetrieveViewSet):
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny, ]
     pagination_class = None
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    pagination_class = LimitPageNumberPagination
+    permission_classes = [IsAuthenticatedOrReadOnly, ]
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return RecipeCreateSerializer
+        return RecipeListSerializer

@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('amount', models.PositiveSmallIntegerField(verbose_name='Количество')),
-                ('ingredient', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='which_ingredient', to='recipies.ingredient', verbose_name='Ингредиент')),
+                ('ingredient', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='which_ingredient', to='recipes.ingredient', verbose_name='Ингредиент')),
             ],
             options={
                 'verbose_name': 'Количество ингридиента',
@@ -63,8 +63,8 @@ class Migration(migrations.Migration):
                 ('text', models.TextField(verbose_name='Текстовое описание')),
                 ('time', models.DecimalField(decimal_places=0, max_digits=3, verbose_name='Время готовки')),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipe', to=settings.AUTH_USER_MODEL)),
-                ('ingredient', models.ManyToManyField(through='recipies.IngredientAmount', to='recipies.ingredient')),
-                ('tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipe', to='recipies.tag', verbose_name='Тег')),
+                ('ingredient', models.ManyToManyField(through='recipes.IngredientAmount', to='recipes.ingredient')),
+                ('tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipe', to='recipes.tag', verbose_name='Тег')),
             ],
             options={
                 'verbose_name': 'Рецепт',
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='ingredientamount',
             name='recipe',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='which_recipe', to='recipies.recipe', verbose_name='Рецепт'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='which_recipe', to='recipes.recipe', verbose_name='Рецепт'),
         ),
         migrations.AddConstraint(
             model_name='ingredient',
