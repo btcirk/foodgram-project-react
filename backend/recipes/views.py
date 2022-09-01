@@ -1,9 +1,11 @@
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Tag, Ingredient, Recipe
 from .serializers import TagSerializer, IngredientSerializer
 from .serializers import RecipeListSerializer, RecipeCreateSerializer
 from api.pagination import LimitPageNumberPagination
+
 
 
 class ListRetrieveViewSet(
@@ -32,6 +34,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     pagination_class = LimitPageNumberPagination
     permission_classes = [IsAuthenticatedOrReadOnly, ]
+    filter_backends = (DjangoFilterBackend,)
+    #filterset_fields = ('tags__slug', 'author__id')
+    filterset_fields = ('name')
 
     def get_serializer_class(self):
         if self.request.method == 'POST':

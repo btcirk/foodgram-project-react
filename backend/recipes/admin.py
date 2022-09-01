@@ -9,7 +9,8 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'measurement_unit')
+    search_fields = ['name']
 
 
 @admin.register(IngredientAmount)
@@ -17,6 +18,12 @@ class IngredientAmountAdmin(admin.ModelAdmin):
     pass
 
 
+class IngredientsInstanceInline(admin.TabularInline):
+    model = IngredientAmount
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'author')
+    list_filter = ('author', 'name', 'tags')
+    inlines = [IngredientsInstanceInline]
