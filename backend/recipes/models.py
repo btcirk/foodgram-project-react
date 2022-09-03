@@ -50,7 +50,8 @@ class Recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор рецепта',
-        blank=False
+        blank=False,
+        #related_name='user'
     )
     name = models.CharField(
         verbose_name='Название',
@@ -70,7 +71,7 @@ class Recipe(models.Model):
         Tag,
         verbose_name='Теги',
         blank=False,
-        related_name='tag'
+        #related_name='tag'
     )
     cooking_time = models.PositiveSmallIntegerField(
         blank=False,
@@ -123,3 +124,41 @@ class IngredientAmount(models.Model):
 
     #def __str__(self):
     #    return self.ingredient
+
+
+class Favorites(models.Model):
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор рецепта',
+        blank=False
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+        blank=False
+    )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Избранные рецепты'
+
+
+class Cart(models.Model):
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор рецепта',
+        blank=False
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+        blank=False
+    )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Список покупок'
