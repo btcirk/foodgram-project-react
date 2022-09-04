@@ -125,10 +125,10 @@ class IngredientAmount(models.Model):
 
 
 class Favorites(models.Model):
-    author = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Автор рецепта',
+        verbose_name='Пользователь',
         blank=False
     )
     recipe = models.ForeignKey(
@@ -144,16 +144,18 @@ class Favorites(models.Model):
 
 
 class Cart(models.Model):
-    author = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Автор рецепта',
+        verbose_name='Пользователь',
+        related_name='cart',
         blank=False
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
+        related_name='cart',
         blank=False
     )
 
