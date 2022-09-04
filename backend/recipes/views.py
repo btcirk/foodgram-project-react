@@ -1,13 +1,13 @@
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, mixins, status, filters
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Tag, Ingredient, Recipe, Favorites, Cart
+from .models import Tag, Ingredient, Recipe, Favorites, Cart, IngredientAmount
 from .serializers import TagSerializer, IngredientSerializer
 from .serializers import RecipeSerializer, RecipeMiniSerializer
-from .filters import RecipeFilter
+from .filters import RecipeFilter, IngredientsFilter
 from .permissions import Owner
 from api.pagination import LimitPageNumberPagination
 
@@ -27,6 +27,8 @@ class TagViewSet(ListRetrieveViewSet):
 class IngredientViewSet(ListRetrieveViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = IngredientsFilter
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -62,6 +64,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
         elif request.method == 'DELETE':
             return self.delete_obj(Cart, request.user, pk)
         return None
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def download_shopping_cart(self, request):
+        print(request.user)
+        recipes = Cart.objects.filter(author=request.user)
+        print(recipes)
+        #queryset = IngredientAmount.objects.filter(recipe=recipes.all())
+        #print(queryset)
+        return Response('Скачать корзину', status=status.HTTP_200_OK)
 
     def add_obj(self, model, user, pk):
         if model.objects.filter(author=user, recipe__id=pk).exists():

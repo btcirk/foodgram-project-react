@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Tag, Ingredient, Recipe, IngredientAmount
+from .models import Tag, Ingredient, Recipe, IngredientAmount, Favorites, Cart
 from users.serializers import UserSerializer
 from rest_framework.validators import UniqueTogetherValidator
 from django.shortcuts import get_object_or_404
@@ -112,8 +112,26 @@ class RecipeSerializer(serializers.ModelSerializer):
         return instance
 
     def get_is_favorited(self, obj):
-        return True
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Favorites.objects.filter(author=user, recipe=obj.id).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        return True
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Cart.objects.filter(author=user, recipe=obj.id).exists()
+
+
+class CartSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
+    )
+
+    class Meta:
+        model = IngredientAmount
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 

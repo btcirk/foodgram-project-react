@@ -1,6 +1,13 @@
 from rest_framework import serializers
 
 from .models import User, Subscription
+from recipes.models import Recipe
+
+
+class RecipeMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,26 +30,26 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
-    #recipes = serializers.SerializerMethodField()
-    #recipes_count = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Subscription
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
-                  'is_subscribed')
+                  'is_subscribed', 'recipes', 'recipes_count')
 
     def get_is_subscribed(self, obj):
         return Subscription.objects.filter(
             user=obj.user, author=obj.author
         ).exists()
 
-    #def get_recipes(self, obj):
-    #    request = self.context.get('request')
-    #    limit = request.GET.get('recipes_limit')
-    #    queryset = Recipe.objects.filter(author=obj.author)
-    #    if limit:
-    #        queryset = queryset[:int(limit)]
-    #    return CropRecipeSerializer(queryset, many=True).data
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        queryset = Recipe.objects.filter(author=obj.author)
+        if limit:
+            queryset = queryset[:int(limit)]
+        return RecipeMiniSerializer(queryset, many=True).data
 
-    #def get_recipes_count(self, obj):
-    #    return Recipe.objects.filter(author=obj.author).count()
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj.author).count()

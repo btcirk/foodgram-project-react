@@ -50,8 +50,7 @@ class Recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор рецепта',
-        blank=False,
-        #related_name='user'
+        blank=False
     )
     name = models.CharField(
         verbose_name='Название',
@@ -70,8 +69,7 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         verbose_name='Теги',
-        blank=False,
-        #related_name='tag'
+        blank=False
     )
     cooking_time = models.PositiveSmallIntegerField(
         blank=False,
