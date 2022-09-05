@@ -1,5 +1,11 @@
 from django_filters import rest_framework as filters
-from .models import Recipe, Ingredient
+from recipes.models import Recipe, Ingredient
+
+
+CHOICES = (
+    (0, False),
+    (1, True)
+)
 
 
 class IngredientsFilter(filters.FilterSet):
@@ -9,10 +15,6 @@ class IngredientsFilter(filters.FilterSet):
         model = Ingredient
         fields = ('name',)
 
-CHOICES = (
-    (0, False),
-    (1, True)
-)
 
 class RecipeFilter(filters.FilterSet):
     tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
