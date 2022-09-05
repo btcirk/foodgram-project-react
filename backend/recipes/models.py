@@ -120,8 +120,8 @@ class IngredientAmount(models.Model):
                                     name='unique ingredients recipe')
         ]
 
-    #def __str__(self):
-    #    return self.ingredient
+    def __str__(self):
+        return f'{self.recipe.name} - {self.ingredient.name}'
 
 
 class Favorites(models.Model):
@@ -135,6 +135,7 @@ class Favorites(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
+        related_name='favorites',
         blank=False
     )
 

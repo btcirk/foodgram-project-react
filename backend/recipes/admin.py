@@ -2,6 +2,10 @@ from django.contrib import admin
 from .models import Tag, Ingredient, IngredientAmount, Recipe
 
 
+class IngredientsInstanceInline(admin.TabularInline):
+    model = IngredientAmount
+
+
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     pass
@@ -18,12 +22,12 @@ class IngredientAmountAdmin(admin.ModelAdmin):
     pass
 
 
-class IngredientsInstanceInline(admin.TabularInline):
-    model = IngredientAmount
-
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author')
+    list_display = ('name', 'author', 'favorites_count')
     list_filter = ('author', 'name', 'tags')
     inlines = [IngredientsInstanceInline]
+
+    def favorites_count(self, obj):
+        return obj.favorites.count()
+    favorites_count.short_description = 'Добавлений в избранное'
