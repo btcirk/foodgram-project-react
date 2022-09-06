@@ -154,7 +154,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.delete_obj(Cart, request.user, pk)
         return None
 
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get'],
+            permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         i_list = {}
         ingredients = IngredientAmount.objects.filter(
@@ -187,4 +188,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         p.save()
 
         buffer.seek(0)
-        return FileResponse(buffer, as_attachment=True, filename='ingredients_list.pdf')
+        return FileResponse(buffer,
+                            as_attachment=True,
+                            filename='ingredients_list.pdf')

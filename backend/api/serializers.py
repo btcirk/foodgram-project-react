@@ -10,6 +10,7 @@ from recipes.models import (Tag, Ingredient, Recipe,
 
 class UserSerializer(serializers.ModelSerializer):
     is_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'first_name',
