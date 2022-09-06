@@ -1,28 +1,29 @@
 import io
-from django.http import FileResponse
+
 from django.contrib.auth import get_user_model
+from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, mixins, status
-from rest_framework.response import Response
-from rest_framework.generics import get_object_or_404
-from rest_framework.decorators import action
-from rest_framework.permissions import (AllowAny,
-                                        IsAuthenticatedOrReadOnly,
-                                        IsAuthenticated)
 from djoser.views import UserViewSet as djoserUserViewSet
-from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
+from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
 
+from recipes.models import (Cart, Favorites, Ingredient, IngredientAmount,
+                            Recipe, Tag)
 from users.models import Subscription
-from recipes.models import (Tag, Ingredient, Recipe, Favorites,
-                            Cart, IngredientAmount)
-from .permissions import Owner
-from .serializers import UserSerializer, SubscriptionSerializer
-from .serializers import TagSerializer, IngredientSerializer
-from .serializers import RecipeSerializer, RecipeMiniSerializer
+
+from .filters import IngredientsFilter, RecipeFilter
 from .pagination import LimitPageNumberPagination
-from .filters import RecipeFilter, IngredientsFilter
+from .permissions import Owner
+from .serializers import (IngredientSerializer, RecipeMiniSerializer,
+                          RecipeSerializer, SubscriptionSerializer,
+                          TagSerializer, UserSerializer)
 
 User = get_user_model()
 

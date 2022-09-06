@@ -1,11 +1,11 @@
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
-from users.models import User, Subscription
-from recipes.models import (Tag, Ingredient, Recipe,
-                            IngredientAmount, Favorites, Cart)
+from recipes.models import (Cart, Favorites, Ingredient, IngredientAmount,
+                            Recipe, Tag)
+from users.models import Subscription, User
 
 
 class UserSerializer(serializers.ModelSerializer):
