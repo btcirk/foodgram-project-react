@@ -82,27 +82,27 @@ PASSPHRASE=<пароль для SSH-ключа, если он установле
 
 - Собрать проект на сервере:
 ```
-sudo docker-compose up -d --build
+sudo docker compose up -d --build
 ```
 
 - Применить миграции:
 ```
-sudo docker-compose exec backend python manage.py migrate --noinput
+sudo docker compose exec backend python manage.py migrate --noinput
 ```
 
 - Собрать статичные файлы:
 ```
-sudo docker-compose exec backend python manage.py collectstatic --noinput
+sudo docker compose exec backend python manage.py collectstatic --noinput
 ```
 
 - Загрузить ингридиенты в базу данных:
 ```
-sudo docker-compose exec backend python manage.py loaddata data/ingredients.json
+sudo docker compose exec backend python manage.py loaddata data/ingredients.json
 ```
 
 - Создать суперпользователя Django:
 ```
-sudo docker-compose exec backend python manage.py createsuperuser
+sudo docker compose exec backend python manage.py createsuperuser
 ```
 
 ## Пример работы проекта
