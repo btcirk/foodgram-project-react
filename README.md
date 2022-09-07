@@ -107,6 +107,6 @@ sudo docker-compose exec backend python manage.py createsuperuser
 
 ## Пример работы проекта
 
-Проект запущен и доступен по этому [адресу](http://158.160.5.128) 
-Логин администратора: admin@test.com
-Пароль: Zaq12wsx!
+Проект запущен и доступен по этому [адресу](http://158.160.5.128)  
+Логин администратора: admin@test.com  
+Пароль: Zaq12wsx!  
