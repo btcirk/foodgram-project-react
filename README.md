@@ -70,7 +70,7 @@ DB_PORT=<5432>
 DOCKER_USERNAME=<имя пользователя>
 DOCKER_PASSWORD=<пароль от DockerHub>
 
-DJANGO_SECRET_KEY=<секретный ключ проекта Django>
+DJANGO_SECRET_KEY=<секретный ключ проекта Django> (нельзя использовать знак & в ключе)
 
 USER=<username для подключения к серверу>
 HOST=<IP сервера>
