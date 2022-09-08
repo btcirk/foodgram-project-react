@@ -111,15 +111,15 @@ class RecipeSerializer(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError({
-                'ingredients': 'Для рецепта нужен хотя бы один ингридиент'})
-        ingredient_list = []
+                'ingredients': 'Для рецепта нужен хотя бы один ингредиент'})
+        ingredient_in_recipe = []
         for ingredient_item in ingredients:
             ingredient = get_object_or_404(Ingredient,
                                            id=ingredient_item['id'])
-            if ingredient in ingredient_list:
-                raise serializers.ValidationError('Ингридиенты должны '
+            if ingredient in ingredient_in_recipe:
+                raise serializers.ValidationError('Ингредиенты должны '
                                                   'быть уникальными')
-            ingredient_list.append(ingredient)
+            ingredient_in_recipe.append(ingredient)
             if int(ingredient_item['amount']) < 0:
                 raise serializers.ValidationError({
                     'ingredients': ('Значение количества ингредиента '
