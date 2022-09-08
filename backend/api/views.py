@@ -1,12 +1,7 @@
-import io
-
 from django.contrib.auth import get_user_model
 from django.http import FileResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as djoserUserViewSet
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -20,6 +15,7 @@ from .permissions import Owner
 from .serializers import (IngredientSerializer, RecipeMiniSerializer,
                           RecipeSerializer, SubscriptionSerializer,
                           TagSerializer, UserSerializer)
+from .utils import pdf_generate
 from users.models import Subscription
 from recipes.models import (Recipe, Tag, Ingredient, IngredientAmount,
                             Cart, Favorites)
@@ -85,7 +81,7 @@ class UserViewSet(djoserUserViewSet):
 class ListRetrieveViewSet(mixins.ListModelMixin,
                           mixins.RetrieveModelMixin,
                           viewsets.GenericViewSet):
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
     pagination_class = None
 
 
@@ -104,8 +100,8 @@ class IngredientViewSet(ListRetrieveViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     pagination_class = LimitPageNumberPagination
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
-    filter_backends = (DjangoFilterBackend,)
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
     serializer_class = RecipeSerializer
 
@@ -157,36 +153,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'],
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        i_list = {}
+        cart = {}
         ingredients = IngredientAmount.objects.filter(
             recipe__cart__user=request.user).values_list(
             'ingredient__name', 'ingredient__measurement_unit',
             'amount')
         for item in ingredients:
             name = item[0]
-            if name not in i_list:
-                i_list[name] = {
+            if name not in cart:
+                cart[name] = {
                     'measurement_unit': item[1],
                     'amount': item[2]
                 }
             else:
-                i_list[name]['amount'] += item[2]
-        pdfmetrics.registerFont(
-            TTFont('OpenSans', 'OpenSans-Regular.ttf', 'UTF-8'))
-        buffer = io.BytesIO()
-        p = canvas.Canvas(buffer)
-        p.setFont('OpenSans', size=24)
-        p.drawString(200, 800, 'Список ингредиентов')
-        p.setFont('OpenSans', size=16)
-        height = 750
-        for item in i_list:
-            p.drawString(75, height, (f'- {item} '
-                                      f'({i_list[item]["measurement_unit"]})'
-                                      f' - {i_list[item]["amount"]}'))
-            height -= 25
-        p.showPage()
-        p.save()
+                cart[name]['amount'] += item[2]
 
+        buffer = pdf_generate(cart)
         buffer.seek(0)
         return FileResponse(buffer,
                             as_attachment=True,

@@ -3,8 +3,8 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from users.models import Subscription, User
-from recipes.models import (Recipe, Tag, Ingredient, IngredientAmount,
-                            Cart, Favorites)
+from recipes.models import (Recipe, Tag, Ingredient,
+                            IngredientAmount, Cart, Favorites)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,8 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Subscription.objects.filter(user=user,
-                                           author=obj.id).exists()
+        return Subscription.objects.filter(user=user, author=obj.id).exists()
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
@@ -71,17 +70,14 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit'
-    )
+        source='ingredient.measurement_unit')
 
     class Meta:
         model = IngredientAmount
         fields = ('id', 'name', 'measurement_unit', 'amount')
-        validators = [
-            UniqueTogetherValidator(
-                queryset=IngredientAmount.objects.all(),
-                fields=['ingredient', 'recipe']
-            )
+        validators = [UniqueTogetherValidator(
+            queryset=IngredientAmount.objects.all(),
+            fields=['ingredient', 'recipe'])
         ]
 
 
@@ -130,11 +126,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create_ingredients(self, ingredients, recipe):
         for ingredient in ingredients:
-            IngredientAmount.objects.create(
-                recipe=recipe,
-                ingredient_id=ingredient.get('id'),
-                amount=ingredient.get('amount'),
-            )
+            IngredientAmount.objects.create(recipe=recipe,
+                                            ingredient_id=ingredient.get('id'),
+                                            amount=ingredient.get('amount'))
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
@@ -177,8 +171,7 @@ class CartSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit'
-    )
+        source='ingredient.measurement_unit')
 
     class Meta:
         model = IngredientAmount
