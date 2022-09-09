@@ -15,9 +15,9 @@ def pdf_generate(cart):
     p.setFont('OpenSans', size=16)
     height = 750
     for item in cart:
-        p.drawString(75, height, (f'- {item} '
-                                  f'({cart[item]["measurement_unit"]})'
-                                  f' - {cart[item]["amount"]}'))
+        amount = cart[item]["amount"]
+        measurement_unit = cart[item]["measurement_unit"]
+        p.drawString(75, height, f'- {item} ({measurement_unit}) - {amount}')
         height -= 25
     p.showPage()
     p.save()
