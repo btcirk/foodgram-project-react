@@ -14,8 +14,8 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measurement_unit')
-    search_fields = ['name']
+    list_display = ("name", "measurement_unit")
+    search_fields = ["name"]
 
 
 @admin.register(IngredientAmount)
@@ -25,10 +25,11 @@ class IngredientAmountAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author', 'favorites_count')
-    list_filter = ('author', 'name', 'tags')
+    list_display = ("name", "author", "favorites_count")
+    list_filter = ("author", "name", "tags")
     inlines = [IngredientsInstanceInline]
 
     def favorites_count(self, obj):
         return obj.favorites.count()
-    favorites_count.short_description = 'Добавлений в избранное'
+
+    favorites_count.short_description = "Добавлений в избранное"

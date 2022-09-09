@@ -5,20 +5,27 @@ from djoser.views import UserViewSet as djoserUserViewSet
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import (AllowAny, IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 
 from .filters import IngredientsFilter, RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import Owner
-from .serializers import (IngredientSerializer, RecipeMiniSerializer,
-                          RecipeSerializer, SubscriptionSerializer,
-                          TagSerializer, UserSerializer)
+from .serializers import (
+    IngredientSerializer,
+    RecipeMiniSerializer,
+    RecipeSerializer,
+    SubscriptionSerializer,
+    TagSerializer,
+    UserSerializer,
+)
 from .utils import pdf_generate
 from users.models import Subscription
-from recipes.models import (Recipe, Tag, Ingredient, IngredientAmount,
-                            Cart, Favorites)
+from recipes.models import Recipe, Tag, Ingredient, IngredientAmount, Cart, Favorites
 
 User = get_user_model()
 
@@ -28,26 +35,24 @@ class UserViewSet(djoserUserViewSet):
     serializer_class = UserSerializer
     pagination_class = LimitPageNumberPagination
 
-    @action(detail=True,
-            methods=['post'],
-            permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
         user = request.user
         author = get_object_or_404(User, id=id)
 
         if user == author:
-            return Response({
-                'errors': 'Вы не можете подписываться на самого себя'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"errors": "Вы не можете подписываться на самого себя"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         if Subscription.objects.filter(user=user, author=author).exists():
-            return Response({
-                'errors': 'Вы уже подписаны на данного пользователя'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"errors": "Вы уже подписаны на данного пользователя"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         subscription = Subscription.objects.create(user=user, author=author)
-        serializer = SubscriptionSerializer(
-            subscription, context={'request': request}
-        )
+        serializer = SubscriptionSerializer(subscription, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @subscribe.mapping.delete
@@ -56,14 +61,16 @@ class UserViewSet(djoserUserViewSet):
         author = get_object_or_404(User, id=id)
         if user == author:
             return Response(
-                {'errors': 'Вы не можете отписываться от самого себя'},
-                status=status.HTTP_400_BAD_REQUEST)
+                {"errors": "Вы не можете отписываться от самого себя"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         subscription = Subscription.objects.filter(user=user, author=author)
         if subscription.exists():
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({'errors': 'Вы уже отписались'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"errors": "Вы уже отписались"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
@@ -71,16 +78,14 @@ class UserViewSet(djoserUserViewSet):
         queryset = Subscription.objects.filter(user=user)
         pages = self.paginate_queryset(queryset)
         serializer = SubscriptionSerializer(
-            pages,
-            many=True,
-            context={'request': request}
+            pages, many=True, context={"request": request}
         )
         return self.get_paginated_response(serializer.data)
 
 
-class ListRetrieveViewSet(mixins.ListModelMixin,
-                          mixins.RetrieveModelMixin,
-                          viewsets.GenericViewSet):
+class ListRetrieveViewSet(
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+):
     permission_classes = [AllowAny]
     pagination_class = None
 
@@ -106,7 +111,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
 
     def get_permissions(self):
-        if (self.action == 'partial_update' or self.action == 'destroy'):
+        if self.action == "partial_update" or self.action == "destroy":
             return (Owner(),)
         return super().get_permissions()
 
@@ -115,9 +120,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def add_obj(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({
-                'errors': 'Рецепт уже добавлен в список'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"errors": "Рецепт уже добавлен в список"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
         serializer = RecipeMiniSerializer(recipe)
@@ -128,48 +134,43 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if obj.exists():
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({
-            'errors': 'Рецепт уже удален'
-        }, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"errors": "Рецепт уже удален"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
-    @action(detail=True, methods=['post', 'delete'],
-            permission_classes=[IsAuthenticated])
+    @action(
+        detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated]
+    )
     def favorite(self, request, pk=None):
-        if request.method == 'POST':
+        if request.method == "POST":
             return self.add_obj(Favorites, request.user, pk)
-        elif request.method == 'DELETE':
+        elif request.method == "DELETE":
             return self.delete_obj(Favorites, request.user, pk)
         return None
 
-    @action(detail=True, methods=['post', 'delete'],
-            permission_classes=[IsAuthenticated])
+    @action(
+        detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated]
+    )
     def shopping_cart(self, request, pk=None):
-        if request.method == 'POST':
+        if request.method == "POST":
             return self.add_obj(Cart, request.user, pk)
-        elif request.method == 'DELETE':
+        elif request.method == "DELETE":
             return self.delete_obj(Cart, request.user, pk)
         return None
 
-    @action(detail=False, methods=['get'],
-            permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         cart = {}
         ingredients = IngredientAmount.objects.filter(
-            recipe__cart__user=request.user).values_list(
-            'ingredient__name', 'ingredient__measurement_unit',
-            'amount')
+            recipe__cart__user=request.user
+        ).values_list("ingredient__name", "ingredient__measurement_unit", "amount")
         for item in ingredients:
             name = item[0]
             if name not in cart:
-                cart[name] = {
-                    'measurement_unit': item[1],
-                    'amount': item[2]
-                }
+                cart[name] = {"measurement_unit": item[1], "amount": item[2]}
             else:
-                cart[name]['amount'] += item[2]
+                cart[name]["amount"] += item[2]
 
         buffer = pdf_generate(cart)
         buffer.seek(0)
-        return FileResponse(buffer,
-                            as_attachment=True,
-                            filename='ingredients_list.pdf')
+        return FileResponse(buffer, as_attachment=True, filename="ingredients_list.pdf")

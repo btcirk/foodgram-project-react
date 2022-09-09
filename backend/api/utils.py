@@ -7,17 +7,14 @@ from reportlab.pdfgen import canvas
 
 def pdf_generate(cart):
     buffer = io.BytesIO()
-    pdfmetrics.registerFont(
-        TTFont('OpenSans', 'OpenSans-Regular.ttf', 'UTF-8'))
+    pdfmetrics.registerFont(TTFont("OpenSans", "OpenSans-Regular.ttf", "UTF-8"))
     p = canvas.Canvas(buffer)
-    p.setFont('OpenSans', size=24)
-    p.drawString(200, 800, 'Список ингредиентов')
-    p.setFont('OpenSans', size=16)
+    p.setFont("OpenSans", size=24)
+    p.drawString(200, 800, "Список ингредиентов")
+    p.setFont("OpenSans", size=16)
     height = 750
     for item in cart:
-        amount = cart[item]["amount"]
-        measurement_unit = cart[item]["measurement_unit"]
-        p.drawString(75, height, f'- {item} ({measurement_unit}) - {amount}')
+        p.drawString(75, height, f'- {item} ({cart[item]["measurement_unit"]}) - {cart[item]["amount"]}')
         height -= 25
     p.showPage()
     p.save()
